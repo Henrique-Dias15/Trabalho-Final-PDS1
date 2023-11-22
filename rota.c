@@ -27,9 +27,67 @@ void lerDistancia(int matrizdistancia[MAX][MAX])
     }
     else
     {
-        printf("Not able to open the file.");
+        printf("Não foi possivel abrir o arquivo.");
     }
     fclose(distancia);
+
+}
+//So copiei o de cima e mudei o nome pra ler a criminalidade -kiki
+void lerCrime(int matriz[MAX][MAX])
+{
+    int linha;
+    int coluna;
+    int valor;
+    FILE *criminalidade;
+
+    for(int i = 0; i < MAX; i++){
+        for(int j = 0; j < MAX; j++){
+            matriz[i][j] = -1;
+        }
+    }
+
+    criminalidade = fopen("criminalidade.txt", "r");
+
+    if (criminalidade != NULL)
+    {
+        while (fscanf(criminalidade, "%d,%d,%d", &linha, &coluna, &valor) == 3){ 
+            matriz[linha][coluna] = valor;
+        }
+    }
+    else
+    {
+        printf("Não foi possivel abrir o arquivo.");
+    }
+    fclose(criminalidade);
+
+}
+//so copiei o de cima e mudei o nome pra ler o transito -kiki
+void lertransito(int matriz[MAX][MAX])
+{
+    int linha;
+    int coluna;
+    int valor;
+    FILE *transito;
+
+    for(int i = 0; i < MAX; i++){
+        for(int j = 0; j < MAX; j++){
+            matriz[i][j] = -1;
+        }
+    }
+
+    transito = fopen("transito.txt", "r");
+
+    if (transito != NULL)
+    {
+        while (fscanf(transito, "%d,%d,%d", &linha, &coluna, &valor) == 3){ 
+            matriz[linha][coluna] = valor;
+        }
+    }
+    else
+    {
+        printf("Não foi possivel abrir o arquivo.");
+    }
+    fclose(transito);
 
 }
 
@@ -38,18 +96,23 @@ void lerDistancia(int matrizdistancia[MAX][MAX])
 int main(){
     //Criei a matriz na main pra poder mexer com ela mais tarde em outras funções -kiki
     int matrizdistancia[MAX][MAX];
+    int matrizcriminalidade[MAX][MAX];
+    int matriztransito[MAX][MAX];
 
     lerDistancia(matrizdistancia);
+    lerCrime(matrizcriminalidade);
+    lertransito(matriztransito);
 
     //printando so pra conferir se a matriz ta certa -kiki
-    for (int i = 0; i < MAX; i++)
-    {
+    for (int i = 0; i < MAX; i++){
         for (int j = 0; j < MAX; j++)
         {
             printf("%d ", matrizdistancia[i][j]);
         }
         printf("\n");
     }
+
+
 
     return 0;
 }
