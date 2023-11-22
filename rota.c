@@ -111,6 +111,24 @@ int main(){
         }
         printf("\n");
     }
+    printf("\n");
+    //printando so pra conferir se a matriz ta certa -kiki
+    for (int i = 0; i < MAX; i++){
+        for (int j = 0; j < MAX; j++)
+        {
+            printf("%d ", matrizcriminalidade[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+    //printando so pra conferir se a matriz ta certa -kiki
+    for (int i = 0; i < MAX; i++){
+        for (int j = 0; j < MAX; j++)
+        {
+            printf("%d ", matriztransito[i][j]);
+        }
+        printf("\n");
+    }
 
 
 
