@@ -44,11 +44,33 @@ void ImprimirMatriz(int matriz[MAX][MAX])
     printf("\n");
 }
 
+// Função para gerar a matriz custo - Henrique
+void criarMatrizCusto(int matrizD[MAX][MAX], int matrizCr[MAX][MAX], int matrizT[MAX][MAX], int matrizC[MAX][MAX])
+{
+    for (int i = 0; i < MAX; i++)
+    {
+        for (int j = 0; j < MAX; j++)
+        {
+            if (matrizD[i][j] != -1 && matrizT[i][j] != -1 && matrizCr[i][j] != -1)
+            {
+                // Formula do professor - Henrique
+                matrizC[i][j] = ((matrizD[i][j]) * (matrizD[i][j])) + matrizT[i][j] + (2 * (matrizCr[i][j]));
+            }
+            else
+            {
+                // Quando não existe rota - Henrique
+                matrizC[i][j] = -1;
+            }
+        }
+    }
+}
+
 int main()
 {
     int matrizDistancia[MAX][MAX];
     int matrizCriminalidade[MAX][MAX];
     int matrizTransito[MAX][MAX];
+    int matrizCusto[MAX][MAX];
     FILE *distancia;
     FILE *crime;
     FILE *transito;
@@ -61,13 +83,20 @@ int main()
     criarMatriz(crime, matrizCriminalidade);
     criarMatriz(transito, matrizTransito);
 
-    // Imprimindo as matrizes para teste
+    // Imprimindo as matrizes para teste - Henrique
     printf("Matriz de Distancia: \n");
     ImprimirMatriz(matrizDistancia);
     printf("Matriz de Criminalidade: \n");
     ImprimirMatriz(matrizCriminalidade);
     printf("Matriz de Transito: \n");
     ImprimirMatriz(matrizTransito);
+
+    // Criar matriz custo - Henrique
+    criarMatrizCusto(matrizDistancia, matrizCriminalidade, matrizTransito, matrizCusto);
+
+    // Imprimir matriz custo para teste - Henrique
+    printf("Matriz custo: \n");
+    ImprimirMatriz(matrizCusto);
 
     return 0;
 }
