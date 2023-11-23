@@ -65,6 +65,41 @@ void criarMatrizCusto(int matrizD[MAX][MAX], int matrizCr[MAX][MAX], int matrizT
     }
 }
 
+// Função para calcular melhor rota - Henrique
+void calcularRota(int matriz[MAX][MAX])
+{
+    int valorRota[MAX];
+    int menorValor = 999999;
+    int indiceMenorValor[2];
+    int contador = 0;
+    int k = 0;
+
+    for (int i = 0; i < MAX; i++)
+    {
+        for (int j = 0; j < MAX; j++)
+        {
+            if (matriz[j][i] < menorValor && matriz[j][i] > 0)
+            {
+                menorValor = matriz[j][i];
+                indiceMenorValor[1] = j;
+                indiceMenorValor[2] = i;
+            }
+        }
+
+        printf("Linha = %d \nColuna = %d \nMenor valor: %d\n", indiceMenorValor[1], indiceMenorValor[2], menorValor);
+        menorValor = 99999999;
+
+        for (int z = 0; z < MAX; z++)
+        {
+            matriz[indiceMenorValor[2]][z] = -1;
+            matriz[z][indiceMenorValor[2]] = -1;
+        }
+        printf("\n");
+        ImprimirMatriz(matriz);
+        i = indiceMenorValor[1] - 1;
+    }
+}
+
 int main()
 {
     int matrizDistancia[MAX][MAX];
@@ -97,6 +132,8 @@ int main()
     // Imprimir matriz custo para teste - Henrique
     printf("Matriz custo: \n");
     ImprimirMatriz(matrizCusto);
+
+    calcularRota(matrizCusto);
 
     return 0;
 }
