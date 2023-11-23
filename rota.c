@@ -2,7 +2,7 @@
 
 #define MAX 20
 // Deixei uma função só pra criar as 3 matrizes - Henrique
-void criarMatriz(FILE *arquivo, int matrizdistancia[MAX][MAX])
+void criarMatriz(FILE *arquivo, int matriz[MAX][MAX])
 {
     int linha;
     int coluna;
@@ -12,7 +12,7 @@ void criarMatriz(FILE *arquivo, int matrizdistancia[MAX][MAX])
     {
         for (int j = 0; j < MAX; j++)
         {
-            matrizdistancia[i][j] = -1;
+            matriz[i][j] = -1;
         }
     }
 
@@ -20,7 +20,7 @@ void criarMatriz(FILE *arquivo, int matrizdistancia[MAX][MAX])
     {
         while (fscanf(arquivo, "%d,%d,%d", &linha, &coluna, &valor) == 3)
         { // Aqui tava mei estranho nem sei o que tu tava fazendo mas corrigi colocando na variavel valor que tu criou --kiki
-            matrizdistancia[linha][coluna] = valor;
+            matriz[linha][coluna] = valor;
         }
     }
     else
@@ -30,12 +30,25 @@ void criarMatriz(FILE *arquivo, int matrizdistancia[MAX][MAX])
     fclose(arquivo);
 }
 
+// Função para imprimir as matrizes e evitar muitas linhas de código na main - Henrique
+void ImprimirMatriz(int matriz[MAX][MAX])
+{
+    for (int i = 0; i < MAX; i++)
+    {
+        for (int j = 0; j < MAX; j++)
+        {
+            printf("%d ", matriz[i][j]);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
 int main()
 {
-    // Criei a matriz na main pra poder mexer com ela mais tarde em outras funções -kiki
-    int matrizdistancia[MAX][MAX];
-    int matrizcriminalidade[MAX][MAX];
-    int matriztransito[MAX][MAX];
+    int matrizDistancia[MAX][MAX];
+    int matrizCriminalidade[MAX][MAX];
+    int matrizTransito[MAX][MAX];
     FILE *distancia;
     FILE *crime;
     FILE *transito;
@@ -44,39 +57,17 @@ int main()
     crime = fopen("criminalidade.txt", "r");
     transito = fopen("transito.txt", "r");
 
-    criarMatriz(distancia, matrizdistancia);
-    criarMatriz(crime, matrizcriminalidade);
-    criarMatriz(transito, matriztransito);
+    criarMatriz(distancia, matrizDistancia);
+    criarMatriz(crime, matrizCriminalidade);
+    criarMatriz(transito, matrizTransito);
 
-    // printando so pra conferir se a matriz ta certa -kiki
-    for (int i = 0; i < MAX; i++)
-    {
-        for (int j = 0; j < MAX; j++)
-        {
-            printf("%d ", matrizdistancia[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-    // printando so pra conferir se a matriz ta certa -kiki
-    for (int i = 0; i < MAX; i++)
-    {
-        for (int j = 0; j < MAX; j++)
-        {
-            printf("%d ", matrizcriminalidade[i][j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-    // printando so pra conferir se a matriz ta certa -kiki
-    for (int i = 0; i < MAX; i++)
-    {
-        for (int j = 0; j < MAX; j++)
-        {
-            printf("%d ", matriztransito[i][j]);
-        }
-        printf("\n");
-    }
+    // Imprimindo as matrizes para teste
+    printf("Matriz de Distancia: \n");
+    ImprimirMatriz(matrizDistancia);
+    printf("Matriz de Criminalidade: \n");
+    ImprimirMatriz(matrizCriminalidade);
+    printf("Matriz de Transito: \n");
+    ImprimirMatriz(matrizTransito);
 
     return 0;
 }
