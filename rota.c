@@ -106,8 +106,8 @@ void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1])
                 if (matriz[j][i] < menorValor && matriz[j][i] > 0)
                 {
                     menorValor = matriz[j][i];
-                    indiceMenorValor[1] = j;
-                    indiceMenorValor[2] = i;
+                    indiceMenorValor[0] = j;
+                    indiceMenorValor[1] = i;
                 }
             }
 
@@ -120,12 +120,12 @@ void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1])
             // Apaga os valores do ponto já utilizado
             for (int z = 0; z < MAX; z++)
             {
-                matriz[indiceMenorValor[2]][z] = -1;
-                matriz[z][indiceMenorValor[2]] = -1;
+                matriz[indiceMenorValor[1]][z] = -1;
+                matriz[z][indiceMenorValor[1]] = -1;
             }
 
             // Coloca que a proxima coluna é o valor da ultima linha  
-            i = indiceMenorValor[1] - 1;
+            i = indiceMenorValor[0] - 1;
 
             // Para parar quando tiver rodado a quantidade suficiente
             contador++;
