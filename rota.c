@@ -66,38 +66,96 @@ void criarMatrizCusto(int matrizD[MAX][MAX], int matrizCr[MAX][MAX], int matrizT
 }
 
 // Função para calcular melhor rota - Henrique
-void calcularRota(int matriz[MAX][MAX])
+void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1])
 {
-    int valorRota[MAX];
     int menorValor = 999999;
     int indiceMenorValor[2];
     int contador = 0;
-    int k = 0;
+    int contador2 = 0;
+    int soma1 = 0;
+    int soma2 = 0;
+    int matrizReserva[MAX][MAX];
 
+    // Deixa a matriz reserva igual a matriz original para trocar no futuro
     for (int i = 0; i < MAX; i++)
     {
         for (int j = 0; j < MAX; j++)
         {
-            if (matriz[j][i] < menorValor && matriz[j][i] > 0)
+            matrizReserva[i][j] = matriz[i][j];
+        }        
+    }
+
+    while (contador2 < MAX)
+    {
+        // Deixa a matriz a ser analisada igual a matriz original usando a reserva
+        for (int i = 0; i < MAX; i++)
+        {
+            for (int j = 0; j < MAX; j++)
             {
-                menorValor = matriz[j][i];
-                indiceMenorValor[1] = j;
-                indiceMenorValor[2] = i;
+                matriz[i][j] = matrizReserva[i][j];
             }
         }
 
-        printf("Linha = %d \nColuna = %d \nMenor valor: %d\n", indiceMenorValor[1], indiceMenorValor[2], menorValor);
-        menorValor = 99999999;
-
-        for (int z = 0; z < MAX; z++)
+        // Pega um ponto inicial i, que começa no 0 e sobe 1 a cada while
+        for (int i = contador2; i < MAX; i++)
         {
-            matriz[indiceMenorValor[2]][z] = -1;
-            matriz[z][indiceMenorValor[2]] = -1;
+            // Roda por todos os valores da linha
+            for (int j = 0; j < MAX; j++)
+            {
+                // Acha o menor valor, armazena ele e os indices
+                if (matriz[j][i] < menorValor && matriz[j][i] > 0)
+                {
+                    menorValor = matriz[j][i];
+                    indiceMenorValor[1] = j;
+                    indiceMenorValor[2] = i;
+                }
+            }
+
+            // Armazena o valor do primeiro custo
+            valorRota[contador] = menorValor;
+
+            // Reseta o menorValor
+            menorValor = 99999;
+
+            // Apaga os valores do ponto já utilizado
+            for (int z = 0; z < MAX; z++)
+            {
+                matriz[indiceMenorValor[2]][z] = -1;
+                matriz[z][indiceMenorValor[2]] = -1;
+            }
+
+            // Coloca que a proxima coluna é o valor da ultima linha  
+            i = indiceMenorValor[1] - 1;
+
+            // Para parar quando tiver rodado a quantidade suficiente
+            contador++;
+            if (contador == MAX - 1)
+            {
+                i = 20;
+            }
         }
-        printf("\n");
-        ImprimirMatriz(matriz);
-        i = indiceMenorValor[1] - 1;
+
+        // Soma os valores dos custos
+        for (int i = 0; i < MAX - 1; i++)
+        {
+            soma1 += valorRota[i];
+        }
+
+        // Substitui se for o novo menor
+        if (soma1 < soma2 || soma2 == 0)
+        {
+            soma2 = soma1;
+        }
+            printf("if");
+
+        // Aumenta o contador do while
+        contador2 ++;
+
+        // Reseta o contador do for
+        contador = 0;
     }
+    printf("PAROU O WHILE!!!\n");
+    printf("Soma: %d\n", soma2);
 }
 
 int main()
@@ -106,6 +164,7 @@ int main()
     int matrizCriminalidade[MAX][MAX];
     int matrizTransito[MAX][MAX];
     int matrizCusto[MAX][MAX];
+    int valorRota[MAX - 1];
     FILE *distancia;
     FILE *crime;
     FILE *transito;
@@ -133,7 +192,14 @@ int main()
     printf("Matriz custo: \n");
     ImprimirMatriz(matrizCusto);
 
-    calcularRota(matrizCusto);
+    calcularRota(matrizCusto, valorRota);
+
+    printf("Valor rota: ");
+    for (int i = 0; i < MAX - 1; i++)
+    {
+        printf("%d ", valorRota[i]);
+    }
+    printf("\n");
 
     return 0;
 }
