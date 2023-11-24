@@ -136,7 +136,7 @@ void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1])
         }
 
         // Soma os valores dos custos
-        for (int i = 0; i < MAX - 1; i++)
+        for (int i = 0; i < MAX; i++)
         {
             soma1 += valorRota[i];
         }
@@ -148,6 +148,9 @@ void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1])
         }
             printf("if");
 
+
+        // Reseta o soma1
+        soma1 = 0;
         // Aumenta o contador do while
         contador2 ++;
 
