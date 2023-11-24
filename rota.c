@@ -75,6 +75,7 @@ void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1])
     int soma1 = 0;
     int soma2 = 0;
     int matrizReserva[MAX][MAX];
+    int valorRotaTemp[MAX - 1];
 
     // Deixa a matriz reserva igual a matriz original para trocar no futuro
     for (int i = 0; i < MAX; i++)
@@ -82,7 +83,7 @@ void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1])
         for (int j = 0; j < MAX; j++)
         {
             matrizReserva[i][j] = matriz[i][j];
-        }        
+        }
     }
 
     while (contador2 < MAX)
@@ -112,7 +113,7 @@ void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1])
             }
 
             // Armazena o valor do primeiro custo
-            valorRota[contador] = menorValor;
+            valorRotaTemp[contador] = menorValor;
 
             // Reseta o menorValor
             menorValor = 99999;
@@ -124,7 +125,9 @@ void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1])
                 matriz[z][indiceMenorValor[1]] = -1;
             }
 
-            // Coloca que a proxima coluna é o valor da ultima linha  
+            ImprimirMatriz(matriz);
+
+            // Coloca que a proxima coluna é o valor da ultima linha
             i = indiceMenorValor[0] - 1;
 
             // Para parar quando tiver rodado a quantidade suficiente
@@ -136,28 +139,29 @@ void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1])
         }
 
         // Soma os valores dos custos
-        for (int i = 0; i < MAX; i++)
+        for (int i = 0; i < MAX - 1; i++)
         {
-            soma1 += valorRota[i];
+            soma1 += valorRotaTemp[i];
         }
 
         // Substitui se for o novo menor
         if (soma1 < soma2 || soma2 == 0)
         {
             soma2 = soma1;
+            for (int i = 0; i < MAX - 1; i++)
+            {
+                valorRota[i] = valorRotaTemp[i];
+            }
         }
-            printf("if");
-
 
         // Reseta o soma1
         soma1 = 0;
         // Aumenta o contador do while
-        contador2 ++;
+        contador2++;
 
         // Reseta o contador do for
         contador = 0;
     }
-    printf("PAROU O WHILE!!!\n");
     printf("Soma: %d\n", soma2);
 }
 
