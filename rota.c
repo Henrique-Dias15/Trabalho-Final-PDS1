@@ -2,6 +2,8 @@
 #include <math.h>
 
 #define MAX 20
+#define PONTOS 5
+
 // Deixei uma função só pra criar as 3 matrizes - Henrique
 void criarMatriz(FILE *arquivo, int matriz[MAX][MAX])
 {
@@ -32,11 +34,11 @@ void criarMatriz(FILE *arquivo, int matriz[MAX][MAX])
 }
 
 // Função para imprimir as matrizes e evitar muitas linhas de código na main - Henrique
-void ImprimirMatriz(int matriz[MAX][MAX])
+void ImprimirMatriz(int n, int matriz[n][n])
 {
-    for (int i = 0; i < MAX; i++)
+    for (int i = 0; i < n; i++)
     {
-        for (int j = 0; j < MAX; j++)
+        for (int j = 0; j < n; j++)
         {
             printf("%d ", matriz[i][j]);
         }
@@ -66,8 +68,20 @@ void criarMatrizCusto(int matrizD[MAX][MAX], int matrizCr[MAX][MAX], int matrizT
     }
 }
 
+// Função para gerar a matriz só com os pontos da rota - Henrique
+void criarMatrizPontos(int pontos[PONTOS], int matrizCusto[MAX][MAX], int matrizRota[PONTOS][PONTOS])
+{
+    for (int i = 0; i < PONTOS; i++)
+    {
+        for (int j = 0; j < PONTOS; j++)
+        {
+            matrizRota[i][j] = matrizCusto[pontos[i - 1]][pontos[j - 1]];
+        }
+    }
+}
+
 // Função para calcular melhor rota - Henrique
-void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1], int rota[MAX])
+void calcularRota(int matriz[PONTOS][PONTOS], int valorRota[PONTOS - 1], int rota[PONTOS])
 {
     int menorValor = 999999;
     int indiceMenorValor[2];
@@ -75,35 +89,39 @@ void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1], int rota[MAX])
     int contador2 = 0;
     int soma1 = 0;
     int soma2 = 0;
-    int matrizReserva[MAX][MAX];
-    int valorRotaTemp[MAX - 1];
-    int rotaTemp[MAX];
+    int matrizReserva[PONTOS][PONTOS];
+    int valorRotaTemp[PONTOS - 1];
+    int rotaTemp[PONTOS];
 
     // Deixa a matriz reserva igual a matriz original para trocar no futuro
-    for (int i = 0; i < MAX; i++)
+    for (int i = 0; i < PONTOS; i++)
     {
-        for (int j = 0; j < MAX; j++)
+        for (int j = 0; j < PONTOS; j++)
         {
             matrizReserva[i][j] = matriz[i][j];
         }
     }
 
-    while (contador2 < MAX)
+    printf("Calculando melhor rota...\n");
+
+    while (contador2 < PONTOS)
     {
         // Deixa a matriz a ser analisada igual a matriz original usando a reserva
-        for (int i = 0; i < MAX; i++)
+        for (int i = 0; i < PONTOS; i++)
         {
-            for (int j = 0; j < MAX; j++)
+            for (int j = 0; j < PONTOS; j++)
             {
                 matriz[i][j] = matrizReserva[i][j];
             }
         }
 
+        ImprimirMatriz(PONTOS, matriz);
+
         // Pega um ponto inicial i, que começa no 0 e sobe 1 a cada while
-        for (int i = contador2; i < MAX; i++)
+        for (int i = contador2; i < PONTOS; i++)
         {
             // Roda por todos os valores da linha
-            for (int j = 0; j < MAX; j++)
+            for (int j = 0; j < PONTOS; j++)
             {
                 // Acha o menor valor, armazena ele e os indices
                 if (matriz[j][i] < menorValor && matriz[j][i] > 0)
@@ -116,7 +134,7 @@ void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1], int rota[MAX])
 
             // Armazena o valor do primeiro custo
             valorRotaTemp[contador] = menorValor;
-            if (contador != 18)
+            if (contador != PONTOS - 2)
             {
                 rotaTemp[contador] = indiceMenorValor[0];
             }
@@ -130,38 +148,42 @@ void calcularRota(int matriz[MAX][MAX], int valorRota[MAX - 1], int rota[MAX])
             menorValor = 99999;
 
             // Apaga os valores do ponto já utilizado
-            for (int z = 0; z < MAX; z++)
+            for (int z = 0; z < PONTOS; z++)
             {
                 matriz[indiceMenorValor[1]][z] = -1;
                 matriz[z][indiceMenorValor[1]] = -1;
             }
+
+            ImprimirMatriz(PONTOS, matriz);
 
             // Coloca que a proxima coluna é o valor da ultima linha
             i = indiceMenorValor[0] - 1;
 
             // Para parar quando tiver rodado a quantidade suficiente
             contador++;
-            if (contador == MAX - 1)
+            if (contador == PONTOS - 1)
             {
-                i = 20;
+                i = PONTOS;
             }
         }
 
         // Soma os valores dos custos
-        for (int i = 0; i < MAX - 1; i++)
+        for (int i = 0; i < PONTOS - 1; i++)
         {
             soma1 += valorRotaTemp[i];
         }
+
+        printf("Soma: %d\n\n", soma1);
 
         // Substitui se for o novo menor
         if (soma1 < soma2 || soma2 == 0)
         {
             soma2 = soma1;
-            for (int i = 0; i < MAX - 1; i++)
+            for (int i = 0; i < PONTOS - 1; i++)
             {
                 valorRota[i] = valorRotaTemp[i];
             }
-            for (int i = 0; i < MAX; i++)
+            for (int i = 0; i < PONTOS; i++)
             {
                 rota[i] = rotaTemp[i];
             }
@@ -184,8 +206,10 @@ int main()
     int matrizCriminalidade[MAX][MAX];
     int matrizTransito[MAX][MAX];
     int matrizCusto[MAX][MAX];
-    int valorRota[MAX - 1];
-    int rota[MAX];
+    int valorRota[PONTOS - 1];
+    int rota[PONTOS];
+    int pontos[PONTOS] = {1, 2, 3, 4, 5};
+    int matrizRota[PONTOS][PONTOS];
     FILE *distancia;
     FILE *crime;
     FILE *transito;
@@ -194,40 +218,32 @@ int main()
     crime = fopen("criminalidade.txt", "r");
     transito = fopen("transito.txt", "r");
 
+    // Criar matrizes - Henrique
     criarMatriz(distancia, matrizDistancia);
     criarMatriz(crime, matrizCriminalidade);
     criarMatriz(transito, matrizTransito);
+    criarMatrizCusto(matrizDistancia, matrizCriminalidade, matrizTransito, matrizCusto);
+    criarMatrizPontos(pontos, matrizCusto, matrizRota);
 
     // Imprimindo as matrizes para teste - Henrique
     printf("Matriz de Distancia: \n");
-    ImprimirMatriz(matrizDistancia);
+    ImprimirMatriz(MAX, matrizDistancia);
     printf("Matriz de Criminalidade: \n");
-    ImprimirMatriz(matrizCriminalidade);
+    ImprimirMatriz(MAX, matrizCriminalidade);
     printf("Matriz de Transito: \n");
-    ImprimirMatriz(matrizTransito);
+    ImprimirMatriz(MAX, matrizTransito);
+    printf("Matriz Custo: \n");
+    ImprimirMatriz(MAX, matrizCusto);
+    printf("Matriz Rota: \n");
+    ImprimirMatriz(PONTOS, matrizRota);
 
-    // Criar matriz custo - Henrique
-    criarMatrizCusto(matrizDistancia, matrizCriminalidade, matrizTransito, matrizCusto);
-
-    // Imprimir matriz custo para teste - Henrique
-    printf("Matriz custo: \n");
-    ImprimirMatriz(matrizCusto);
-
-    calcularRota(matrizCusto, valorRota, rota);
+    calcularRota(matrizRota, valorRota, rota);
 
     printf("Rota: ");
-    for (int i = 0; i < MAX; i++)
+    for (int i = 0; i < PONTOS ; i++)
     {
-        printf("%d ", rota[i]);
+        printf(" %d", rota[i]);
     }
-    printf("\n");
-
-    printf("Valores da rota: ");
-    for (int i = 0; i < MAX - 1; i++)
-    {
-        printf("%d ", valorRota[i]);
-    }
-    printf("\n");
-
+    
     return 0;
 }
