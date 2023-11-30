@@ -1,45 +1,31 @@
 #include <stdio.h>
-#include <math.h>
 
 #define MAX 20
-#define PONTOS 5
+#define NOT_VISITED -1
+#define INFINITY 99999
 
-// Deixei uma função só pra criar as 3 matrizes - Henrique
-void criarMatriz(FILE *arquivo, int matriz[MAX][MAX])
-{
-    int linha;
-    int coluna;
-    int valor;
+void criarMatriz(FILE *arquivo, int matriz[MAX][MAX]) {
+    int linha, coluna, valor;
 
-    for (int i = 0; i < MAX; i++)
-    {
-        for (int j = 0; j < MAX; j++)
-        {
-            matriz[i][j] = -1;
+    for (int i = 0; i < MAX; i++) {
+        for (int j = 0; j < MAX; j++) {
+            matriz[i][j] = NOT_VISITED;
         }
     }
 
-    if (arquivo != NULL)
-    {
-        while (fscanf(arquivo, "%d,%d,%d", &linha, &coluna, &valor) == 3)
-        { // Aqui tava mei estranho nem sei o que tu tava fazendo mas corrigi colocando na variavel valor que tu criou --kiki
+    if (arquivo != NULL) {
+        while (fscanf(arquivo, "%d,%d,%d", &linha, &coluna, &valor) == 3) {
             matriz[linha][coluna] = valor;
         }
-    }
-    else
-    {
-        printf("Não foi possivel abrir o arquivo.");
+    } else {
+        printf("Não foi possível abrir o arquivo.");
     }
     fclose(arquivo);
 }
 
-// Função para imprimir as matrizes e evitar muitas linhas de código na main - Henrique
-void ImprimirMatriz(int n, int matriz[n][n])
-{
-    for (int i = 0; i < n; i++)
-    {
-        for (int j = 0; j < n; j++)
-        {
+void ImprimirMatriz(int matriz[MAX][MAX]) {
+    for (int i = 0; i < MAX; i++) {
+        for (int j = 0; j < MAX; j++) {
             printf("%d ", matriz[i][j]);
         }
         printf("\n");
@@ -47,169 +33,101 @@ void ImprimirMatriz(int n, int matriz[n][n])
     printf("\n");
 }
 
-// Função para gerar a matriz custo - Henrique
-void criarMatrizCusto(int matrizD[MAX][MAX], int matrizCr[MAX][MAX], int matrizT[MAX][MAX], int matrizC[MAX][MAX])
-{
-    for (int i = 0; i < MAX; i++)
-    {
-        for (int j = 0; j < MAX; j++)
-        {
-            if (matrizD[i][j] != -1 && matrizT[i][j] != -1 && matrizCr[i][j] != -1)
-            {
-                // Formula do professor - Henrique
+void criarMatrizCusto(int matrizD[MAX][MAX], int matrizCr[MAX][MAX], int matrizT[MAX][MAX], int matrizC[MAX][MAX]) {
+    for (int i = 0; i < MAX; i++) {
+        for (int j = 0; j < MAX; j++) {
+            if (matrizD[i][j] != NOT_VISITED && matrizT[i][j] != NOT_VISITED && matrizCr[i][j] != NOT_VISITED) {
                 matrizC[i][j] = ((matrizD[i][j]) * (matrizD[i][j])) + matrizT[i][j] + (2 * (matrizCr[i][j]));
-            }
-            else
-            {
-                // Quando não existe rota - Henrique
-                matrizC[i][j] = -1;
+            } else {
+                matrizC[i][j] = NOT_VISITED;
             }
         }
     }
 }
 
-// Função para gerar a matriz só com os pontos da rota - Henrique
-void criarMatrizPontos(int pontos[PONTOS], int matrizCusto[MAX][MAX], int matrizRota[PONTOS][PONTOS])
-{
-    for (int i = 0; i < PONTOS; i++)
-    {
-        for (int j = 0; j < PONTOS; j++)
-        {
-            matrizRota[i][j] = matrizCusto[pontos[i - 1]][pontos[j - 1]];
-        }
-    }
-}
+void rota(int matriz[MAX][MAX]) {
+    int contadorExterno = 0;
+    int linha = 0;
+    int proxLinha = 0;
+    int menor = INFINITY;
+    int valoresTemp[MAX - 1];
+    int valores[MAX - 1];
+    int contadorInterno = 0;
+    int pontosTemp[MAX];
+    int pontos[MAX];
+    int somaTemp = 0;
+    int soma = 0;
+    int matrizTemp[MAX][MAX];
 
-// Função para calcular melhor rota - Henrique
-void calcularRota(int matriz[PONTOS][PONTOS], int valorRota[PONTOS - 1], int rota[PONTOS])
-{
-    int menorValor = 999999;
-    int indiceMenorValor[2];
-    int contador = 0;
-    int contador2 = 0;
-    int soma1 = 0;
-    int soma2 = 0;
-    int matrizReserva[PONTOS][PONTOS];
-    int valorRotaTemp[PONTOS - 1];
-    int rotaTemp[PONTOS];
-
-    // Deixa a matriz reserva igual a matriz original para trocar no futuro
-    for (int i = 0; i < PONTOS; i++)
-    {
-        for (int j = 0; j < PONTOS; j++)
-        {
-            matrizReserva[i][j] = matriz[i][j];
+    for (int i = 0; i < MAX; i++) {
+        for (int j = 0; j < MAX; j++) {
+            matrizTemp[i][j] = matriz[i][j];
         }
     }
 
-    printf("Calculando melhor rota...\n");
-
-    while (contador2 < PONTOS)
-    {
-        // Deixa a matriz a ser analisada igual a matriz original usando a reserva
-        for (int i = 0; i < PONTOS; i++)
-        {
-            for (int j = 0; j < PONTOS; j++)
-            {
-                matriz[i][j] = matrizReserva[i][j];
+    while (contadorExterno < MAX) {
+        linha = contadorExterno;
+        for (int i = 0; i < MAX; i++) {
+            for (int j = 0; j < MAX; j++) {
+                matriz[i][j] = matrizTemp[i][j];
             }
         }
 
-        ImprimirMatriz(PONTOS, matriz);
-
-        // Pega um ponto inicial i, que começa no 0 e sobe 1 a cada while
-        for (int i = contador2; i < PONTOS; i++)
-        {
-            // Roda por todos os valores da linha
-            for (int j = 0; j < PONTOS; j++)
-            {
-                // Acha o menor valor, armazena ele e os indices
-                if (matriz[j][i] < menorValor && matriz[j][i] > 0)
-                {
-                    menorValor = matriz[j][i];
-                    indiceMenorValor[0] = j;
-                    indiceMenorValor[1] = i;
+        while (contadorInterno < MAX - 1) {
+            for (int i = 0; i < MAX; i++) {
+                if (matriz[linha][i] != NOT_VISITED && matriz[linha][i] < menor) {
+                    menor = matriz[linha][i];
+                    proxLinha = i;
                 }
             }
 
-            // Armazena o valor do primeiro custo
-            valorRotaTemp[contador] = menorValor;
-            if (contador != PONTOS - 2)
-            {
-                rotaTemp[contador] = indiceMenorValor[0];
-            }
-            else
-            {
-                rotaTemp[contador] = indiceMenorValor[0];
-                rotaTemp[contador + 1] = indiceMenorValor[1];
+            for (int i = 0; i < MAX; i++) {
+                matriz[linha][i] = matriz[i][linha] = NOT_VISITED;
             }
 
-            // Reseta o menorValor
-            menorValor = 99999;
-
-            // Apaga os valores do ponto já utilizado
-            for (int z = 0; z < PONTOS; z++)
-            {
-                matriz[indiceMenorValor[1]][z] = -1;
-                matriz[z][indiceMenorValor[1]] = -1;
+            pontosTemp[contadorInterno] = linha;
+            if (contadorInterno == MAX - 2) {
+                pontosTemp[contadorInterno + 1] = proxLinha;
             }
 
-            ImprimirMatriz(PONTOS, matriz);
-
-            // Coloca que a proxima coluna é o valor da ultima linha
-            i = indiceMenorValor[0] - 1;
-
-            // Para parar quando tiver rodado a quantidade suficiente
-            contador++;
-            if (contador == PONTOS - 1)
-            {
-                i = PONTOS;
-            }
+            linha = proxLinha;
+            valoresTemp[contadorInterno] = menor;
+            somaTemp += menor;
+            menor = INFINITY;
+            contadorInterno++;
         }
 
-        // Soma os valores dos custos
-        for (int i = 0; i < PONTOS - 1; i++)
-        {
-            soma1 += valorRotaTemp[i];
-        }
-
-        printf("Soma: %d\n\n", soma1);
-
-        // Substitui se for o novo menor
-        if (soma1 < soma2 || soma2 == 0)
-        {
-            soma2 = soma1;
-            for (int i = 0; i < PONTOS - 1; i++)
-            {
-                valorRota[i] = valorRotaTemp[i];
+        contadorExterno++;
+        contadorInterno = 0;
+        if (somaTemp < soma || soma == 0) {
+            soma = somaTemp;
+            for (int i = 0; i < MAX - 1; i++) {
+                valores[i] = valoresTemp[i];
             }
-            for (int i = 0; i < PONTOS; i++)
-            {
-                rota[i] = rotaTemp[i];
+            for (int i = 0; i < MAX; i++) {
+                pontos[i] = pontosTemp[i];
             }
         }
-
-        // Reseta o soma1
-        soma1 = 0;
-        // Aumenta o contador do while
-        contador2++;
-
-        // Reseta o contador do for
-        contador = 0;
+        somaTemp = 0;
     }
-    printf("Soma: %d\n", soma2);
+
+    printf("Soma: %d\n", soma);
+    printf("Valores: ");
+    for (int i = 0; i < MAX - 1; i++) {
+        printf("%d ", valores[i] + 1);
+    }
+    printf("\nRota: ");
+    for (int i = 0; i < MAX; i++) {
+        printf("%d ", pontos[i] + 1);
+    }
 }
 
-int main()
-{
+int main() {
     int matrizDistancia[MAX][MAX];
     int matrizCriminalidade[MAX][MAX];
     int matrizTransito[MAX][MAX];
     int matrizCusto[MAX][MAX];
-    int valorRota[PONTOS - 1];
-    int rota[PONTOS];
-    int pontos[PONTOS] = {1, 2, 3, 4, 5};
-    int matrizRota[PONTOS][PONTOS];
+
     FILE *distancia;
     FILE *crime;
     FILE *transito;
@@ -218,32 +136,27 @@ int main()
     crime = fopen("criminalidade.txt", "r");
     transito = fopen("transito.txt", "r");
 
-    // Criar matrizes - Henrique
     criarMatriz(distancia, matrizDistancia);
     criarMatriz(crime, matrizCriminalidade);
     criarMatriz(transito, matrizTransito);
-    criarMatrizCusto(matrizDistancia, matrizCriminalidade, matrizTransito, matrizCusto);
-    criarMatrizPontos(pontos, matrizCusto, matrizRota);
 
-    // Imprimindo as matrizes para teste - Henrique
     printf("Matriz de Distancia: \n");
-    ImprimirMatriz(MAX, matrizDistancia);
+    ImprimirMatriz(matrizDistancia);
     printf("Matriz de Criminalidade: \n");
-    ImprimirMatriz(MAX, matrizCriminalidade);
+    ImprimirMatriz(matrizCriminalidade);
     printf("Matriz de Transito: \n");
-    ImprimirMatriz(MAX, matrizTransito);
-    printf("Matriz Custo: \n");
-    ImprimirMatriz(MAX, matrizCusto);
-    printf("Matriz Rota: \n");
-    ImprimirMatriz(PONTOS, matrizRota);
+    ImprimirMatriz(matrizTransito);
 
-    calcularRota(matrizRota, valorRota, rota);
+    criarMatrizCusto(matrizDistancia, matrizCriminalidade, matrizTransito, matrizCusto);
 
-    printf("Rota: ");
-    for (int i = 0; i < PONTOS ; i++)
-    {
-        printf(" %d", rota[i]);
-    }
-    
+    printf("Matriz custo: \n");
+    ImprimirMatriz(matrizCusto);
+
+    rota(matrizCusto);
+
+    fclose(distancia);
+    fclose(crime);
+    fclose(transito);
+
     return 0;
 }
