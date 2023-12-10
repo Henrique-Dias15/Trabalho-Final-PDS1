@@ -59,7 +59,7 @@ void criarMatrizCusto(int matrizD[MAX][MAX], int matrizCr[MAX][MAX], int matrizT
             if (matrizD[i][j] != NOT_VISITED && matrizT[i][j] != NOT_VISITED && matrizCr[i][j] != NOT_VISITED)
             {
                 // Calculo em ordem de prioridade: distancia, transito e criminalidade
-                matrizC[i][j] = (3 * (matrizD[i][j])) + (2 * (matrizCr[i][j])) + matrizT[i][j];
+                matrizC[i][j] = (3 * (matrizD[i][j])) + (3 * (matrizCr[i][j])) + (2 * (matrizT[i][j]));
             }
             else
             {
